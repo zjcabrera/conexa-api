@@ -11,6 +11,7 @@ import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedingService } from './seeds/services/seeds.service';
 import { SeedsModule } from './seeds/seeds.module';
+import { MoviesModule } from './movies/movies.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -32,6 +33,8 @@ import { SeedsModule } from './seeds/seeds.module';
     AuthModule,
 
     SeedsModule,
+
+    MoviesModule,
   ],
   providers: [SeedingService],
   controllers: [],
