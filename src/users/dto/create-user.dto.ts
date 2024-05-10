@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { RoleEntity } from 'src/roles/entities';
 export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
@@ -24,4 +25,6 @@ export class CreateUserDTO {
       'Password must include at least one uppercase letter, one lowercase letter, one number, one special character, and must be between 8 and 15 characters',
   })
   password: string;
+
+  role: RoleEntity;
 }

@@ -7,13 +7,19 @@ import { CreateUserDTO } from '../dto';
 import { UsersRepository } from '../repositories';
 
 import { ErrorManager } from 'src/utils/managers';
+import { RolesService } from 'src/roles/services/roles.service';
+import { RolesEnum } from 'src/roles/entities/enums/roles.enum';
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly rolesService: RolesService
+  ) {}
 
   async create(createUserDto: CreateUserDTO): Promise<UserEntity> {
     try {
       createUserDto.password = await bcrypt.hash(createUserDto.password, +process.env.HASH_SALT);
+      createUserDto.role = await this.rolesService.findOneBy({ key: 'name', value: RolesEnum.REGULAR });
       return await this.usersRepository.createUser(createUserDto);
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);

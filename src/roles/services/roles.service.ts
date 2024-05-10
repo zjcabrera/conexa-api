@@ -42,4 +42,15 @@ export class RolesService {
 
     return role;
   }
+
+  async findOneBy({ key, value }: { key: string; value: string }): Promise<RoleEntity> {
+    const role = await this.rolesRepository.findRoleBy(key, value);
+    if (!role)
+      throw new ErrorManager({
+        type: 'NOT_FOUND',
+        message: 'No role found.',
+      });
+
+    return role;
+  }
 }
