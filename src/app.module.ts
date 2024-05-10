@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -9,6 +9,8 @@ import { DataSourceConfig } from './config/database/data.source';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
+import { SeedingService } from './seeds/services/seeds.service';
+import { SeedsModule } from './seeds/seeds.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,15 +23,23 @@ import { AuthModule } from './auth/auth.module';
         abortEarly: true,
       },
     }),
-    TypeOrmModule.forRoot({ ...DataSourceConfig }),
+    TypeOrmModule.forRoot({ ...DataSourceConfig, autoLoadEntities: true }),
 
     UsersModule,
 
     RolesModule,
 
     AuthModule,
+
+    SeedsModule,
   ],
-  providers: [],
+  providers: [SeedingService],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly seedingService: SeedingService) {}
+
+  async onApplicationBootstrap(): Promise<void> {
+    await this.seedingService.seed();
+  }
+}

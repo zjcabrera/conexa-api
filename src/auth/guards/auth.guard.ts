@@ -49,10 +49,9 @@ export class AuthGuard implements CanActivate {
 
   private useToken = (token: string): IUseToken | string => {
     try {
-      const { sub, role } = this.jwtService.verify(
-        token,
-        this.configService.get('SERVER_JWT_SECRET')
-      ) as IAuthTokenResult;
+      const { sub, role } = this.jwtService.verify(token, {
+        secret: this.configService.get('SERVER_JWT_SECRET'),
+      }) as IAuthTokenResult;
 
       return {
         sub,
@@ -60,13 +59,8 @@ export class AuthGuard implements CanActivate {
         isExpired: false,
       };
     } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        const { sub, role } = this.jwtService.decode(token) as IAuthTokenResult;
-        return {
-          sub,
-          role,
-          isExpired: true,
-        };
+      if (error.expiredAt) {
+        return 'Token is Expired!';
       } else {
         return 'Token is invalid';
       }

@@ -45,4 +45,12 @@ export class RolesRepository {
       },
     });
   }
+
+  public async findRoleBy(key: string, value: any): Promise<RoleEntity> {
+    return await this.roleRepository.findOne({
+      where: {
+        [key]: value,
+      },
+    });
+  }
 }
