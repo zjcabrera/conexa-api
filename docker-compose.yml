@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  projectbase_pg:
+    image: postgres:16.0
+    container_name: conexaapi_pg
+    restart: always
+    environment:
+      POSTGRES_DB: conexaapidb
+      POSTGRES_USER: templateuser
+      POSTGRES_PASSWORD: secret1234
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
