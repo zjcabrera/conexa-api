@@ -2,18 +2,21 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import rateLimit from 'express-rate-limit';
 
 import * as morgan from 'morgan';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { CORS } from './constants';
+import { MethodNotAllowedExceptionFilter } from './middlewares/not-found-exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(morgan('dev'));
 
+  const configService = app.get(ConfigService);
   app.useGlobalPipes(
     new ValidationPipe({
       transformOptions: {
@@ -21,6 +24,29 @@ async function bootstrap() {
       },
     })
   );
+
+  app.useGlobalFilters(new MethodNotAllowedExceptionFilter());
+
+  // Values in miliseconds
+  const limiterPerSecond = rateLimit({
+    windowMs: configService.get<number>('RATE_LIMIT_WINDOWS_MS_PER_SECONDS'),
+    max: configService.get<number>('RATE_LIMIT_WINDOWS_MAX_PER_SECONDS'),
+  });
+
+  const limiterPerMinute = rateLimit({
+    windowMs: configService.get<number>('RATE_LIMIT_WINDOWS_MS_PER_MINUTES'),
+    max: configService.get<number>('RATE_LIMIT_WINDOWS_MAX_PER_MINUTES'),
+  });
+
+  const limiterPerHour = rateLimit({
+    windowMs: configService.get<number>('RATE_LIMIT_WINDOWS_MS_PER_HOURS'),
+    max: configService.get<number>('RATE_LIMIT_WINDOWS_MAX_PER_HOURS'),
+  });
+
+  // Aplicar los l�mites a todas las rutas
+  app.use(limiterPerSecond);
+  app.use(limiterPerMinute);
+  app.use(limiterPerHour);
 
   app.use(
     helmet({
@@ -39,8 +65,6 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
-
-  const configService = app.get(ConfigService);
 
   app.enableCors(CORS);
 

@@ -21,12 +21,7 @@ export class RolesService {
   async findAll(): Promise<RoleEntity[]> {
     try {
       const roles = await this.rolesRepository.findRoles();
-      if (!roles.length)
-        throw new ErrorManager({
-          type: 'NOT_FOUND',
-          message: 'No roles found.',
-        });
-      return roles;
+      return roles || [];
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }

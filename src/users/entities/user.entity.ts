@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseEntity } from '../../config/database/base.entity';
 import { RoleEntity } from '../../roles/entities';
 
 import { IUser } from '../../interfaces/user.interface';
+import { MovieEntity } from 'src/movies/entities';
 @Entity('users')
 export class UserEntity extends BaseEntity implements IUser {
   @Column()
@@ -23,4 +24,7 @@ export class UserEntity extends BaseEntity implements IUser {
 
   @ManyToOne(() => RoleEntity, (role: RoleEntity) => role.users)
   role: RoleEntity;
+
+  @OneToMany(() => MovieEntity, (movie: MovieEntity) => movie.createdBy)
+  movies: MovieEntity[];
 }
