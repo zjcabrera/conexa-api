@@ -4,8 +4,6 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import { Request } from 'express';
-import * as jwt from 'jsonwebtoken';
-
 import { PUBLIC_KEY } from 'src/constants';
 
 import { UsersService } from 'src/users/services/users.service';

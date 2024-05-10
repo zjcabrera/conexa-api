@@ -20,21 +20,4 @@ export const DataSourceConfig: DataSourceOptions = {
   namingStrategy: new SnakeNamingStrategy(),
 };
 
-// Configuración para seeds
-export const SeedDataSourceConfig: DataSourceOptions = {
-  type: 'postgres',
-  host,
-  port,
-  username,
-  password,
-  database,
-  entities: [`dist/**/*.entity{.ts,.js}`],
-  migrations: ['src/seeds/*{.ts,.js}'], // Ubicación de seeds
-  synchronize: false,
-  migrationsRun: false,
-  logging: false,
-  namingStrategy: new SnakeNamingStrategy(),
-};
-
-export const AppDs = new DataSource(DataSourceConfig); // DataSource para migraciones
-export const SeedDs = new DataSource(SeedDataSourceConfig); // DataSource para seeds
+export const AppDs = new DataSource(DataSourceConfig);

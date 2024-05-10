@@ -9,6 +9,7 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { ErrorManager } from 'src/utils/managers';
 import { IAuthBody, IPayloadToken } from '../interfaces/auth.interface';
+import { LoginResponseDTO } from '../responsesDto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,7 +17,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService
   ) {}
-  public async validateUser({ username, password }: IAuthBody) {
+  public async validateUser({ username, password }: IAuthBody): Promise<LoginResponseDTO> {
     try {
       const userByUsername = await this.userService.findBy({ key: 'username', value: username });
       const userByEmail = await this.userService.findBy({ key: 'email', value: username });
@@ -41,19 +42,25 @@ export class AuthService {
     return this.jwtService.sign({ payload, secret, expiresIn: expires });
   }
 
-  private async generateJWT(user: UserEntity): Promise<any> {
+  private async generateJWT(user: UserEntity): Promise<{
+    accessToken: string;
+    username: string;
+    email: string;
+  }> {
     const payload: IPayloadToken = {
       role: user.role.id,
       sub: user.id,
     };
 
+    const { username, email } = user;
     return {
       accessToken: this.signJWT({
         payload,
         secret: this.configService.get('SERVER_JWT_SECRET'),
         expires: this.configService.get('SERVER_JWT_EXPIRATION_TIME'),
       }),
-      user,
+      username,
+      email,
     };
   }
 }
