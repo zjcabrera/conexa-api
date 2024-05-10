@@ -47,11 +47,13 @@ All the Postgres configurations needed can be found in the docker folder.
 
 4. Run the migrations and seeds
 
-5. Start the project
+npm run m:gen:dev -- ./src/migrations/init
+npm run build
+npm run m:run 5. Start the project
 
-   ```bash
-   npm run start
-   ```
+```bash
+npm run start
+```
 
 ### Commitizen
 
